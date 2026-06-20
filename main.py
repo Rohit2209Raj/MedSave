@@ -1,11 +1,10 @@
 from fastapi import FastAPI,File,UploadFile,HTTPException
 from pydantic import BaseModel
-from pdf_extractor import extract_text
+# from pdf_extractor import extract_text
 from llm_text import llm_generate
 import shutil,os
 
 app=FastAPI()
-
 
 @app.get('/')
 def home():
@@ -18,11 +17,7 @@ async def get_med(prescription:UploadFile=File(...)):
     with open(temp_path,'wb') as f:
         shutil.copyfileobj(prescription.file,f)
     
-    response=""
-    if not prescription.filename.endswith(".pdf"):
-        response=llm_generate(temp_path)
-    else:
-        response=extract_text(temp_path)
+    response=llm_generate(temp_path)
 
     os.remove(temp_path)
 
