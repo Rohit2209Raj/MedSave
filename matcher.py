@@ -46,10 +46,3 @@ def get_substitutes(drug_name):
     final_matches = remove_substring_duplicates(unique_matches)
 
     return [(clean_name(name), price) for name, price in final_matches]
-
-
-# Test
-if __name__ == "__main__":
-    results = get_substitutes("Aciloc 150 Tablet")
-    for name, price in results:
-        print(f"Medicine: {name} | Price: ₹{price}")
