@@ -13,16 +13,16 @@ from llm_text import llm_generate
 #         return llm_generate(pdf_path)
 
 
-def extract_medicine_table(pdf_path):
-    with pdfplumber.open(pdf_path) as pdf:
-        page = pdf.pages[0]
-        tables = page.extract_tables()
+# def extract_medicine_table(pdf_path):
+#     with pdfplumber.open(pdf_path) as pdf:
+#         page = pdf.pages[0]
+#         tables = page.extract_tables()
         
-        medicines = []
+#         medicines = []
         
-        for table in tables:
-            for row in table:
-                # Row mein medicine name, dosage, etc. columns honge
-                print(row)  # pehle dekh lo structure kaisa hai
+#         for table in tables:
+#             for row in table:
+#                 # Row mein medicine name, dosage, etc. columns honge
+#                 print(row)  # pehle dekh lo structure kaisa hai
                 
-        return tables
+#         return tables
