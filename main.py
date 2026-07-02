@@ -22,6 +22,7 @@ async def get_med(prescription:UploadFile=File(...)):
 
     os.remove(temp_path)
 
+
     generic_medicines={}
     for x in response:
         generic_medicines[x['medicine_name']]=(get_substitutes(x['medicine_name']))

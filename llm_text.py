@@ -25,6 +25,7 @@ def llm_generate(file_path):
                     
                     Return ONLY a valid JSON array in this exact format, 
                     with no extra text or explanation:
+                    medicine name with qty only like 5 and 1% but not with mg or w/w or v/v or else and then type of medicine Cream/Tablet/Capsules/Soap/Solution/Suspension/Syrup/Lotion/Gel etc
                     
                     [
                     {
