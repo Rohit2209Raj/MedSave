@@ -1,5 +1,10 @@
 from sentence_transformers import SentenceTransformer,util
 from jan_aushadhi_embedding import rows,vectors,model
+from groq import Groq
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_top_candidates(query_composition: str, rows, vectors, top_k=5):
     """
@@ -22,6 +27,17 @@ def get_top_candidates(query_composition: str, rows, vectors, top_k=5):
         })
 
     return candidates
+
+
+
+# def get_substitues(med_name:str):
+#     client=Groq(api_key=os.getenv('GROQ_API_KEY'))
+
+#     system_prompt='''
+
+
+# '''
+
 
 
 if __name__ == "__main__":
