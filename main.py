@@ -28,4 +28,4 @@ async def get_med(prescription:UploadFile=File(...)):
         generic_medicines[x['name']]=(get_substitutes(x['name']+x['type']+x['qty']))
 
 
-    return response
+    return generic_medicines

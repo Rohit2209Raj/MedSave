@@ -1,33 +1,42 @@
-from sentence_transformers import SentenceTransformer, util
-from sqlalchemy import create_engine, text
+import pickle
+import os
+from sentence_transformers import SentenceTransformer,util
+from sqlalchemy import create_engine,text
 
-engine = create_engine('postgresql://postgres:FROM EARTH TO SUN@localhost:5432/MedSave_db')
+engine=create_engine('postgresql://postgres:FROM EARTH TO SUN@localhost:5432/MedSave_db')
 
-# Model ek baar load hota hai, poore script ke liye reuse hota hai
-model = SentenceTransformer('all-MiniLM-L6-v2')
+model=SentenceTransformer('all-MiniLM-L6-v2')
 
+EMBEDDINGS_CACHE = "jan_aushadhi_embeddings.pkl"
 
-def load_jan_aushadhi_embeddings():
-    """
-    Jan Aushadhi table ka pura data padhta hai, saare drug_name ko
-    ek saath embed karta hai. Ye function sirf EK BAAR chalna chahiye
-    (server start pe, ya script ke shuru mein) — baar baar nahi.
-    """
+def load_jan_aushadhi_embeddings(force_recompute=True):
+
+    if os.path.exists(EMBEDDINGS_CACHE) and not force_recompute:
+        print(f'EMbedding Present: ')
+        with open(EMBEDDINGS_CACHE,'rb') as f:
+            cached_data=pickle.load(f)
+
+        return cached_data['rows'],cached_data['vectors']
+
+    print('Fetching data from Database')
     with engine.connect() as conn:
-        result = conn.execute(
-            text("SELECT drug_name, unit_size, mrp FROM jan_aushadhi")
+        result=conn.execute(
+            text("SELECT drug_name,unit_size,mrp FROM jan_aushadhi")
         )
-        rows = result.mappings().all()
+        rows=result.mapping().all()
 
     if not rows:
-        raise ValueError("jan_aushadhi table empty hai ya query fail hui")
+        raise ValueError("jan_aushadhi table is empty")
 
     names = [row["drug_name"] for row in rows]
-    print(f"Embedding {len(names)} Jan Aushadhi entries...")
     vectors = model.encode(names, show_progress_bar=True)
 
-    return rows, vectors
+    caches_data={
+        'rows':rows,
+        'vectors':vectors
+    }
 
+    with open(EMBEDDINGS_CACHE,'wb') as f:
+        pickle.dump(cached_data,f)
 
-rows,vectors=load_jan_aushadhi_embeddings()
-
+    return rows,vectors

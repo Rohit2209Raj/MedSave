@@ -107,11 +107,12 @@ def get_substitutes(med_name:str):
             #  Critical Rule 2
             if you are unsure about which medicne to choose between 15 or you cant deduce one simply deny and return "Dont found any medicine" but do not give reccomendation until and unless confidence level is greater than 90%.
 
+            #Critical Rule 3
+            Always provide exact names mrp and dosage no summary,shortenting merging at all.
             # Strict Output format in JSON only:
             {
-            'generic_medicine':----,
-            'mrp of generic medicine':------,
-            'dosage':--------(if given)
+            'generic_medicine':Exact name of best clinical match,
+            'mrp of generic medicine':mrp of best clinical match,
             }
     
             '''
@@ -132,19 +133,21 @@ def get_substitutes(med_name:str):
 
 
 # if __name__ == "__main__":
-#     # Step 1: ek baar embed karo
-#     # rows, vectors = load_jan_aushadhi_embeddings()
+# #     # Step 1: ek baar embed karo
+# #     # rows, vectors = load_jan_aushadhi_embeddings()
 
 #     # Step 2: test queries
 #     test_queries = [
-#         "Amlodipine (5mg)  Metoprolol Succinate (50mg)"
-#     ]
+#             "Amlodipine (5mg)  Metoprolol Succinate (50mg)"
+#         ]
 
-#     # for query in test_queries:
-#     #     print(f"\n--- Query: {query} ---")
-#     #     candidates = get_top_candidates(query, rows, vectors, top_k=15)
-#     #     for c in candidates:
-#     #         print(f"  {c['score']:.4f}  |  {c['drug_name']}  |  MRP: {c['mrp']}")
+#     for query in test_queries:
+#         print(f"\n--- Query: {query} ---")
+#         candidates = get_top_candidates(query, rows, vectors, top_k=15)
+#         for c in candidates:
+#             print(f"  {c['score']:.4f}  |  {c['drug_name']}  |  MRP: {c['mrp']}")
 
-#     print(get_substitutes(test_queries[0]))
+#         print(get_substitutes(query))
+
+#     # print(get_substitutes(test_queries[0]))
 
