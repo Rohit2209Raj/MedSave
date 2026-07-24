@@ -23,19 +23,9 @@ def llm_generate(file_path):
                  {"inline_data": {"mime_type": mime_type, "data": file_bytes}},
                      """Extract all medicines from this prescription.
                     
-                    Return ONLY a valid JSON array in this exact format, 
-                    with no extra text or explanation:
-                    medicine name with qty only like 5 and 1% but not with mg or w/w or v/v or else and then type of medicine Cream/Tablet/Capsules/Soap/Solution/Suspension/Syrup/Lotion/Gel etc
+                    Return ONLY a valid JSON array containing for each medicine its name,type like gel/tablet/syringe/cream etc along with its qty in ml/mg/whatever provided.
                     
-                    [
-                    {
-                        "medicine_name": "...",
-                        "dosage": "...",
-                        "frequency": "...",
-                        "duration": "...",
-                        "confidence": "high/medium/low"
-                    }
-                    ]
+                    
                     
                     If any field is unclear or unreadable, set its value to 
                     null and confidence to "low".
