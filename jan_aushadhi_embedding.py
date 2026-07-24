@@ -9,7 +9,7 @@ model=SentenceTransformer('all-MiniLM-L6-v2')
 
 EMBEDDINGS_CACHE = "jan_aushadhi_embeddings.pkl"
 
-def load_jan_aushadhi_embeddings(force_recompute=True):
+def load_jan_aushadhi_embeddings(force_recompute=False):
 
     if os.path.exists(EMBEDDINGS_CACHE) and not force_recompute:
         print(f'EMbedding Present: ')
@@ -23,7 +23,7 @@ def load_jan_aushadhi_embeddings(force_recompute=True):
         result=conn.execute(
             text("SELECT drug_name,unit_size,mrp FROM jan_aushadhi")
         )
-        rows=result.mapping().all()
+        rows=result.mappings().all()
 
     if not rows:
         raise ValueError("jan_aushadhi table is empty")
@@ -31,7 +31,7 @@ def load_jan_aushadhi_embeddings(force_recompute=True):
     names = [row["drug_name"] for row in rows]
     vectors = model.encode(names, show_progress_bar=True)
 
-    caches_data={
+    cached_data={
         'rows':rows,
         'vectors':vectors
     }
@@ -40,3 +40,6 @@ def load_jan_aushadhi_embeddings(force_recompute=True):
         pickle.dump(cached_data,f)
 
     return rows,vectors
+
+
+load_jan_aushadhi_embeddings(force_recompute=True)
