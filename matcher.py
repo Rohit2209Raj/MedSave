@@ -8,17 +8,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-EMBEDDINGS_CACHE = "jan_aushadhi_embeddings.pkl"
+EMBEDDINGS_CACHE1 = "jan_aushadhi_embeddings.pkl"
+EMBEDDINGS_CACHE2 = "medicine_embeddings.pkl"
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
-def load_embedding_from_cache():
-    if not os.path.exists(EMBEDDINGS_CACHE):
+def load_jan_aushadhi_embedding_from_cache():
+    if not os.path.exists(EMBEDDINGS_CACHE1):
         raise FileNotFoundError(
-            f"❌ Cache file '{EMBEDDINGS_CACHE}' nahi mila!\n"
-            f"Pehle 'medsave_embeddings.py' run karo to cache create ho."
+            f"❌ Cache file '{EMBEDDINGS_CACHE1}' nahi mila!\n"
+            f"Pehle 'jan_aushadhi_embeddings.py' run karo to cache create ho."
         )
-    print(f"📦 Loading embeddings from cache: {EMBEDDINGS_CACHE}")
-    with open(EMBEDDINGS_CACHE, 'rb') as f:
+    print(f"📦 Loading embeddings from cache: {EMBEDDINGS_CACHE1}")
+    with open(EMBEDDINGS_CACHE1, 'rb') as f:
         cached_data = pickle.load(f)
     
     rows = cached_data['rows']
@@ -27,7 +28,26 @@ def load_embedding_from_cache():
     
     return rows, vectors
 
-def get_top_candidates(query_composition: str, rows, vectors, top_k=15):
+
+
+
+def load_medicine_embedding_from_cache():
+    if not os.path.exists(EMBEDDINGS_CACHE2):
+        raise FileNotFoundError(
+            f"❌ Cache file '{EMBEDDINGS_CACHE2}' nahi mila!\n"
+            f"Pehle 'medicine_embeddings.py' run karo to cache create ho."
+        )
+    print(f"📦 Loading embeddings from cache: {EMBEDDINGS_CACHE2}")
+    with open(EMBEDDINGS_CACHE2, 'rb') as f:
+        cached_data = pickle.load(f)
+    
+    rows = cached_data['rows']
+    vectors = cached_data['vectors']
+    print(f"✅ Loaded {len(rows)} embeddings from cache")
+    
+    return rows, vectors
+
+def get_top_candidates_jan_aushadhi(query_composition: str, rows, vectors, top_k=15):
     query_vec = model.encode(query_composition)
 
     scores = util.cos_sim(query_vec, vectors)[0]
@@ -46,16 +66,38 @@ def get_top_candidates(query_composition: str, rows, vectors, top_k=15):
  
     return candidates
 
+
+def get_top_candidates_medicine(query_composition: str, rows, vectors, top_k=10):
+    query_vec = model.encode(query_composition)
+
+    scores = util.cos_sim(query_vec, vectors)[0]
+
+    top_results = scores.topk(min(top_k, len(rows)))
+ 
+    candidates = []
+    for score, idx in zip(top_results.values, top_results.indices):
+        idx = int(idx)
+        candidates.append({
+            "drug_name": rows[idx]["drug_name"],
+            "mrp": rows[idx]["mrp"],
+            "score": round(float(score), 4),
+        })
+ 
+    return candidates
+
 def get_substitutes(med_name: str):
-    rows,vectors=load_embedding_from_cache()
-    candidates=get_top_candidates(med_name,rows,vectors)
+    rows,vectors=load_jan_aushadhi_embedding_from_cache()
+    rows2,vectors2=load_medicine_embedding_from_cache()
+    candidates=get_top_candidates_jan_aushadhi(med_name,rows,vectors)
+    candidates_medicine=get_top_candidates_medicine(med_name,rows2,vectors2)
     client = Groq(api_key=os.getenv('GROQ_API_KEY'))
  
     system_prompt = '''
     You are a pharmaceutical dosage-matching assistant. You will be given an ORIGINAL medicine 
-    (name + dosage per active ingredient) and a list of 15 CANDIDATE medicines with their names, 
+    (name + dosage per active ingredient) and 
+    1 list of 15 CANDIDATE medicines with their names, 
     dosages, similarity scores, and MRP. Your job is to pick the single best clinical match.
- 
+
     ## Critical Rules:
     1. IGNORE the similarity score completely — it is unreliable and often rewards text/phrase overlap.
     2. Match by DOSAGE first, not by name similarity.
@@ -63,7 +105,7 @@ def get_substitutes(med_name: str):
     4. Always provide exact names, MRP, and dosage — no summaries or shortcuts.
  
     ## Output Format (JSON ONLY):
-    {
+    {   "name":
         "generic_medicine": "Exact name of best match",
         "mrp": MRP value,
         "dosage": "Exact dosage info",
