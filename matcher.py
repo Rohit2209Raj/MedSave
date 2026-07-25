@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 EMBEDDINGS_CACHE1 = "jan_aushadhi_embeddings.pkl"
-EMBEDDINGS_CACHE2 = "medicine_embeddings.pkl"
+EMBEDDINGS_CACHE2 = "medicine_embedding.pkl"
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def load_jan_aushadhi_embedding_from_cache():
@@ -114,7 +114,7 @@ def get_substitutes(med_name: str):
     system_prompt2 = '''
         You are a pharmaceutical dosage-matching assistant. You will be given an ORIGINAL medicine 
         (name + dosage per active ingredient) and 
-        1 list of 15 CANDIDATE medicines with their names, 
+        1 list of 10 CANDIDATE medicines with their names, 
         similarity scores, and MRP. Your job is to pick the single best clinical match based on name.
 
     
@@ -205,7 +205,7 @@ def get_substitutes(med_name: str):
 
     raw_text2 = response2.choices[0].message.content
 
-    total_output=raw_text1+raw_text2
+    total_output = f"OUTPUT_A:\n{raw_text1}\n\nOUTPUT_B:\n{raw_text2}"
 
     response3 = client.chat.completions.create(
             messages=[
@@ -217,7 +217,7 @@ def get_substitutes(med_name: str):
             response_format={"type": "json_object"},
             ) 
 
-    raw_text3 = response2.choices[0].message.content
+    raw_text3 = response3.choices[0].message.content
 
     return raw_text3
 
@@ -235,31 +235,31 @@ def get_substitutes(med_name: str):
 
 
 
-if __name__ == "__main__":
-    # Step 1: Cache se embeddings load kar
-    # rows, vectors = load_embeddings_from_cache()
+# if __name__ == "__main__":
+#     # Step 1: Cache se embeddings load kar
+#     # rows, vectors = load_embeddings_from_cache()
  
-    # Step 2: Test queries
-    test_queries = [
-        "Amlodipine 5mg Metoprolol Succinate 50mg",
-        "Paracetamol 500mg",
-        "Aspirin 75mg",
-    ]
+#     # Step 2: Test queries
+#     test_queries = [
+#         "Amlodipine 5mg Metoprolol Succinate 50mg",
+#         "Paracetamol 500mg",
+#         "Aspirin 75mg",
+#     ]
  
-    for query in test_queries:
-        print(f"\n{'='*70}")
-        print(f"🔍 Query: {query}")
-        print(f"{'='*70}")
+#     for query in test_queries:
+#         print(f"\n{'='*70}")
+#         print(f"🔍 Query: {query}")
+#         print(f"{'='*70}")
         
-        # # Step 3: Top candidates nikalo
-        # candidates = get_top_candidates(query, rows, vectors, top_k=15)
+#         # # Step 3: Top candidates nikalo
+#         # candidates = get_top_candidates(query, rows, vectors, top_k=15)
         
-        # print("\n📊 Top 15 Candidates:")
-        # for i, c in enumerate(candidates, 1):
-        #     print(f"  {i:2d}. [{c['score']:.4f}] {c['drug_name']:40s} | {c['unit_size']:15s} | MRP: ₹{c['mrp']}")
+#         # print("\n📊 Top 15 Candidates:")
+#         # for i, c in enumerate(candidates, 1):
+#         #     print(f"  {i:2d}. [{c['score']:.4f}] {c['drug_name']:40s} | {c['unit_size']:15s} | MRP: ₹{c['mrp']}")
  
-        # # Step 4: AI se best match select karwao
-        # print("\n🤖 AI Analysis (Groq):")
-        result = get_substitutes(query)
-        print(result)
+#         # # Step 4: AI se best match select karwao
+#         # print("\n🤖 AI Analysis (Groq):")
+#         result = get_substitutes(query)
+#         print(result)
  
