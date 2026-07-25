@@ -1,6 +1,6 @@
 from fastapi import FastAPI,File,UploadFile,HTTPException
 from pydantic import BaseModel
-from matcher import get_substitutes
+# from matcher import get_substitutes
 # from pdf_extractor import extract_text
 from llm_text import llm_generate
 import shutil,os
@@ -21,11 +21,6 @@ async def get_med(prescription:UploadFile=File(...)):
     response=llm_generate(temp_path)
 
     os.remove(temp_path)
-
-
-    # generic_medicines={}
-    # for x in response:
-    #     generic_medicines[x['name']]=(get_substitutes(x['name']+x['type']+x['qty']))
 
 
     return response
