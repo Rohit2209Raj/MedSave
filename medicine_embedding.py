@@ -21,7 +21,7 @@ def load_medicine_embeddings(force_recompute=False):
     print('Fetching data from Database')
     with engine.connect() as conn:
         result=conn.execute(
-            text("SELECT drug_name,mrp FROM medicine")
+            text("SELECT drug_name,mrp,generic_med1,generic_med2 FROM medicine")
         )
         rows=result.mappings().all()
 
