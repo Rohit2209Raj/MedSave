@@ -12,3 +12,6 @@ Medicine.csv
 Jan_Aushadhi.csv
 temp_pdf_docs.pdf
 medicine_embedding.pkl
+Jan_aushadhi_embedding.pkl
+db_connect.py
+load_data.py
