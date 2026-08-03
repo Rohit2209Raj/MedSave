@@ -18,7 +18,7 @@ if st.button("Submit", disabled=(prescription is None)):
     with st.spinner("Analyzing your prescription..."):
         try:
             response = requests.post(
-                url="http://localhost:8000/upload",
+                url="http://backend:8000/upload",
                 files={"prescription": prescription},
                 timeout=60
             )

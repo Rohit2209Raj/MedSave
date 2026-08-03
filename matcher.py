@@ -4,6 +4,8 @@ import os
 from groq import Groq
 import json
 from dotenv import load_dotenv
+from download_embedding import ensure_embeddings
+
 
 
 load_dotenv()
@@ -33,10 +35,12 @@ def load_jan_aushadhi_embedding_from_cache():
 
 def load_medicine_embedding_from_cache():
     if not os.path.exists(EMBEDDINGS_CACHE2):
-        raise FileNotFoundError(
-            f"❌ Cache file '{EMBEDDINGS_CACHE2}' nahi mila!\n"
-            f"Pehle 'medicine_embeddings.py' run karo to cache create ho."
-        )
+        # raise FileNotFoundError(
+        #     f"❌ Cache file '{EMBEDDINGS_CACHE2}' nahi mila!\n"
+        #     f"Pehle 'medicine_embeddings.py' run karo to cache create ho."
+        # )
+        ensure_embeddings()
+
     print(f"📦 Loading embeddings from cache: {EMBEDDINGS_CACHE2}")
     with open(EMBEDDINGS_CACHE2, 'rb') as f:
         cached_data = pickle.load(f)
