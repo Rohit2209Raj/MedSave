@@ -16,4 +16,4 @@ df_jan_subset=df2[['Generic Name','Unit Size','MRP']]
 df_jan_subset.columns=['drug_name','unit_size','mrp']
 
 df_jan_subset.to_sql('jan_aushadhi', engine, if_exists='replace', index=False)
-print("✅ Data loaded into PostgreSQL!")
+print(" Data loaded into PostgreSQL!")
